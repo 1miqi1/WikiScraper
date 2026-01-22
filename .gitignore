@@ -1,0 +1,39 @@
+# Virtual environments
+venv/
+.venv/
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+
+# Packaging / build
+build/
+dist/
+*.egg-info/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs / temp
+*.log
+*.tmp
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Project runtime outputs
+word-counts.json
+cache/
+*.csv
+*.png
+
+# Jupyter artifacts
+.ipynb_checkpoints/
+
+# Optional: local env/config
+.env
+
