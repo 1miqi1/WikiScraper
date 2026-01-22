@@ -27,7 +27,7 @@ htmlcov/
 
 # Project runtime outputs
 word-counts.json
-cache/
+generated_data/
 *.csv
 *.png
 
@@ -36,4 +36,9 @@ cache/
 
 # Optional: local env/config
 .env
+
+
+# Other
+private.md
+*.pdf
 

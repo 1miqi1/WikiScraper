@@ -1,16 +1,37 @@
 # WikiScraper
 
 ## Project Description
+## Project Description
+
 WikiScraper is a modular Python application for downloading and analyzing
-Wikipedia articles. The program starts from a given phrase and traverses
-the graph of links between articles up to a specified depth.
+articles from a selected wiki. In this project, **Bulbapedia** is used as
+the data source, as its license allows non-commercial reuse and it does not
+restrict automated data collection.
+
 
 The project follows object-oriented programming principles, with a clear
 separation of responsibilities and reusable modules. Each module can be
 imported and used independently, including in a Python REPL or Jupyter
-Notebook environment.
+Notebook env
+
 
 ---
+
+## Wiki Configuration
+
+The program is configured to operate on the
+[Bulbapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page) wiki.
+
+Article URLs on Bulbapedia follow a consistent structure consisting of a fixed
+base URL and an article-specific suffix, where spaces in article titles are
+replaced with underscores:
+
+- **Base URL:** `https://bulbapedia.bulbagarden.net/wiki/`
+- **Article URL format:**  
+  `https://bulbapedia.bulbagarden.net/wiki/<Article_Title>`
+
+For example, the article titled *Team Rocket* is available at:
+
 
 ## Project Structure and File Descriptions
 
@@ -21,15 +42,18 @@ wikiscraper/
 ├── README.md
 ├── word-counts.json
 ├── analysis.ipynb
+├── setup.py
 │
 ├── wikiscraper/
 │   ├── __init__.py
 │   ├── cli.py
+│   ├── config.py
 │   ├── controller.py
 │   ├── scraper.py
 │   ├── html_parser.py
 │   ├── cache.py
 │   ├── models.py
+|   ├── table_utils.py
 │   ├── text_utils.py
 │   ├── output.py
 │   └── analyze.py
@@ -41,8 +65,6 @@ wikiscraper/
 │   │   └── team_rocket.html
 │   ├── test_unit_*.py
 │   └── wiki_scraper_integration_test.py
-│
-└── wiki_scraper_integration_test.py
 ```
 
 ---
@@ -72,6 +94,12 @@ wikiscraper/
   Contains the implementation of the `lang_confidence_score` function, experiments
   with different languages and values of *k*, plots, and written analysis of results.
 
+* **setup.py**
+  Packaging and installation configuration for the project.
+  Allows installing the project in editable mode (`pip install -e .`) so the `wikiscraper` package can be imported from anywhere within the active virtual environment.
+
+
+
 ---
 
 ### Application package (`wikiscraper/`)
@@ -87,6 +115,10 @@ implementing the program logic.
   Implements parsing of command-line arguments (without using `argparse`,
   if required). Converts raw input into structured configuration passed to
   the controller.
+
+* **config.py**  
+  Centralizes wiki settings, filesystem paths, and runtime configuration values
+  used throughout the application.
 
 * **controller.py**
   Central control module of the application.
@@ -118,6 +150,10 @@ implementing the program logic.
   normalization, and summary generation.
   Functions in this module are designed to be easily unit-testable.
 
+* **text_utils.py**
+  Contains table processing.
+  Functions in this module are designed to be easily unit-testable.
+
 * **output.py**
   Handles formatting and displaying results.
   Responsible for printing tables, summaries, and other structured outputs to
@@ -127,6 +163,7 @@ implementing the program logic.
   Implements logic for `--analyze-relative-word-frequency`.
   Compares word frequencies from collected articles with frequency data of a
   given language and optionally generates visualizations.
+
 
 ---
 
@@ -169,6 +206,103 @@ implementing the program logic.
   ```bash
   python wiki_scraper_integration_test.py
   ```
+Here’s a clean “How to run” section you can paste into your **README.md**. It matches your file layout (`wiki_scraper.py`, venv, integration test) and the assignment’s required commands.
+
+
+## How to Run
+
+### 1) Set up the environment
+Create and activate a virtual environment, then install dependencies:
+
+**Linux / macOS**
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+````
+
+**Windows (PowerShell)**
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pip install -e .
+```
+
+---
+
+
+
+### 2) Run the program
+
+The main entry point is:
+
+```bash
+python wiki_scraper.py <arguments>
+```
+
+Supported commands (examples):
+
+#### Summary of the first paragraph
+
+```bash
+python wiki_scraper.py --summary "Team Rocket"
+```
+
+#### Extract a table to CSV
+
+```bash
+python wiki_scraper.py --table "Type" --number 2
+```
+
+With header in the first row:
+
+```bash
+python wiki_scraper.py --table "Type" --number 2 --first-row-is-header
+```
+
+#### Count words in an article (updates `./word-counts.json`)
+
+```bash
+python wiki_scraper.py --count-words "Team Rocket"
+```
+
+#### Compare article word frequency vs. language frequency
+
+```bash
+python wiki_scraper.py --analyze-relative-word-frequency --mode "article" --count 20
+```
+
+With chart output:
+
+```bash
+python wiki_scraper.py --analyze-relative-word-frequency --mode "language" --count 20 --chart "chart.png"
+```
+
+#### Automatically count words across linked pages
+
+```bash
+python wiki_scraper.py --auto-count-words "Team Rocket" --depth 2 --wait 1
+```
+
+---
+
+### 3) Run the integration test
+
+The integration test is a standalone program that loads a saved HTML file from disk
+(no network connection) and verifies one core functionality.
+
+Run:
+
+```bash
+python wiki_scraper_integration_test.py
+```
+
+The test exits with a non-zero status code if it fails.
+
+
 
 ## TODO (Development Plan)
 

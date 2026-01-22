@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   BeautifulSoup Test Page
+  </title>
+  <style>
+   body { font-family: sans-serif; margin: 24px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin: 12px 0; }
+    .price { font-weight: 700; }
+    .muted { color: #666; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+  </style>
+ </head>
+ <body>
+  <header class="card" id="top">
+   <h1 id="title">
+    Test Page
+   </h1>
+   <p class="muted">
+    This file contains common HTML elements for parsing practice.
+   </p>
+   <nav>
+    <a class="nav-link" href="#products">
+     Products
+    </a>
+    |
+    <a class="nav-link" href="#users">
+     Users
+    </a>
+    |
+    <a href="https://example.com" rel="noreferrer" target="_blank">
+     External Link
+    </a>
+   </nav>
+  </header>
+  <main>
+   <section class="card" id="products">
+    <h2>
+     Products
+    </h2>
+    <article class="product" data-sku="SKU-001">
+     <h3 class="name">
+      Yoga Mat
+     </h3>
+     <p class="price" data-currency="PLN">
+      129.99
+     </p>
+     <ul class="tags">
+      <li>
+       eco
+      </li>
+      <li>
+       non-slip
+      </li>
+     </ul>
+     <a class="details" href="/products/yoga-mat">
+      See details
+     </a>
+    </article>
+    <article class="product" data-sku="SKU-002">
+     <h3 class="name">
+      Aroma Oil
+     </h3>
+     <p class="price" data-currency="PLN">
+      49.50
+     </p>
+     <ul class="tags">
+      <li>
+       lavender
+      </li>
+      <li>
+       relax
+      </li>
+     </ul>
+     <a class="details" href="/products/aroma-oil">
+      See details
+     </a>
+    </article>
+   </section>
+   <section class="card" id="users">
+    <h2>
+     Users
+    </h2>
+    <table id="users-table">
+     <thead>
+      <tr>
+       <th>
+        Name
+       </th>
+       <th>
+        Role
+       </th>
+       <th>
+        Active
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr data-user-id="10">
+       <td class="u-name">
+        Joanna
+       </td>
+       <td class="u-role">
+        Admin
+       </td>
+       <td class="u-active">
+        true
+       </td>
+      </tr>
+      <tr data-user-id="11">
+       <td class="u-name">
+        Milena
+       </td>
+       <td class="u-role">
+        Editor
+       </td>
+       <td class="u-active">
+        false
+       </td>
+      </tr>
+     </tbody>
+    </table>
+   </section>
+   <section class="card" id="forms">
+    <h2>
+     Form
+    </h2>
+    <form action="/submit" method="post">
+     <label>
+      Email:
+      <input name="email" type="email" value="test@example.com"/>
+     </label>
+     <label>
+      Plan:
+      <select name="plan">
+       <option value="basic">
+        Basic
+       </option>
+       <option selected="" value="pro">
+        Pro
+       </option>
+      </select>
+     </label>
+     <button type="submit">
+      Send
+     </button>
+    </form>
+   </section>
+   <section class="card" id="misc">
+    <h2>
+     Misc
+    </h2>
+    <p>
+     Some
+     <strong>
+      bold
+     </strong>
+     and
+     <em>
+      italic
+     </em>
+     text.
+    </p>
+    <img alt="Placeholder" src="images/placeholder.png"/>
+    <div class="nested">
+     <div class="level-1">
+      <div class="level-2">
+       <span class="target" data-x="123">
+        Find me
+       </span>
+      </div>
+     </div>
+    </div>
+   </section>
+  </main>
+  <footer class="card">
+   <p class="muted">
+    Footer text.
+    <a href="#top">
+     Back to top
+    </a>
+   </p>
+  </footer>
+ </body>
+</html>
