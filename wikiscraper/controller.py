@@ -148,7 +148,7 @@ class Controller():
     def summary(self, phrase: str):
         """Print the summary of a wiki page."""
         p = self._get_page(phrase=phrase)
-        p.summary()
+        return p.summary()
     
     def count_words(self, phrase: str):
         """Count words on a wiki page and update JSON counts."""

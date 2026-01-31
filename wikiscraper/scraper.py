@@ -73,19 +73,23 @@ class Scraper():
         Raises:
             SystemExit: If the HTML file cannot be downloaded or read locally.
         """
-        path = config.CACHE_DIR/f"{self._sanitize_filename(self.phrase)}.html"
+        path = config.CACHE_DIR/f"{self.phrase}.html"
         
         if not self.use_local_html_file_instead :  
             url = urljoin(self.wiki_base_url, self.page_to_fetch)
             r = requests.get(url)
             if r.status_code == 200:
-                with open(path, "wb") as f:
-                    f.write(r.content)
+                num_files = len([f for f in os.listdir(config.CACHE_DIR)])
+                if num_files < config.MAX_CACHE_SIZE:
+                    with open(path, "wb") as f:
+                        f.write(r.content)
+                else:
+                    return Page(phrase=self.phrase, html=r.content)
+                
             if r.status_code == 404:
                 print(f"Skipping non-existent page: {url}")
-                return None
+                sys.exit(1)
         
-        print(path)
         if os.path.exists(path):
             with open(path, 'r') as f:
                 return Page(phrase=self.phrase, html=f.read())

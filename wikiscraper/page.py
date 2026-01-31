@@ -78,16 +78,53 @@ class Page:
         content = self.get_content()
         if not content:
             print("")
-            return
+            return ""
 
         for p in content.find_all("p", recursive=True):
             text = p.get_text(" ", strip=True)
             if text:
-                print("\n".join(textwrap.wrap(text, width=150)))
-                return
+                summary = "\n".join(textwrap.wrap(text, width=150))
+                print(summary)
+                return summary
 
         print("")
-        return
+        return ""
+    
+    def is_real_table(self, table_tag) -> bool:
+        """
+        Determine if a BeautifulSoup <table> tag is likely a meaningful data table.
+
+        Criteria:
+            - Must have at least one <tr>
+            - Must have at least one <td> or <th>
+            - Ignore tables with common metadata or navigation classes (optional)
+
+        Args:
+            table_tag (bs4.element.Tag): The <table> tag to check.
+
+        Returns:
+            bool: True if the table is likely meaningful, False otherwise.
+        """
+        # Ignore tables with classes that are usually non-data
+        bad_classes = (
+            "navbox", "vertical-navbox", "infobox", "metadata", "toc", "sisterproject", "mbox"
+        )
+        if any(cls in table_tag.get("class", []) for cls in bad_classes):
+            return False
+
+        rows = table_tag.find_all("tr", recursive=True)
+        if len(rows) < 2:
+            return False
+
+        # Check if at least one row has 2 or more cells
+        for row in rows:
+            cells = row.find_all(["td", "th"])
+            if len(cells) >= 2:
+                # Check if at least one cell has visible text
+                if any(cell.get_text(strip=True) for cell in cells):
+                    return True
+
+        return False
 
     def table(self, n: int, output_dir: str = config.DATA_DIR, first_row_is_header: bool = False):
         """
@@ -111,6 +148,19 @@ class Page:
         if n < 1 or n > len(tables):
             raise ValueError(f"Znaleziono {len(tables)} tabel, a wybrano numer {n}.")
 
+        cnt = 0
+        target_table_html = None
+        for table in tables:
+            if not self.is_real_table(table):
+                continue
+            cnt += 1
+            
+            if cnt == n:
+                target_table_html = str(table)
+        
+        if target_table_html is None:
+            raise ValueError(f"Found {cnt} real tables, but chosen number {n}.")
+        
         target_table_html = str(tables[n - 1])
         header = 0 if first_row_is_header else None
         dfs = pd.read_html(io.StringIO(target_table_html), header=header)

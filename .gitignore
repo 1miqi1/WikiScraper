@@ -42,5 +42,6 @@ generated_data/
 # Other
 private.md
 *.pdf
+.gitignore
 /data
 

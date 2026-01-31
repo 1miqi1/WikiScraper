@@ -13,7 +13,8 @@ Legend:
 - 🟡 Implement `table` : (fix table)
 - 🟢 Implement `count words` 
 - 🟡 Implement `scraper.py` (network fetch + optional local HTML mode)
-- 🔴 Implement `bfs` 
-- 🔴 Implement `analyze-relative word frequency` (extract content-only text, links, tables)
+- 🟡 Implement `bfs` (test)
+- 🟡 Implement `analyze-relative word frequency` (test)
 - 🔴 Implement `parser` (extract content-only text, links, tables)
+- 
 
