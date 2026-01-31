@@ -22,7 +22,7 @@ WIKI_ARTICLE_HREF_PREFIX = "/wiki/"  # used to recognize internal article links
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 DATA_DIR = REPO_ROOT / "data"
-CACHE_DIR = DATA_DIR / "data/cache"
+CACHE_DIR = DATA_DIR / "cache"
 WORD_COUNTS_JSON = DATA_DIR / "word-counts.json"
 
 TESTS_DIR = REPO_ROOT / "tests"

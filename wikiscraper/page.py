@@ -19,25 +19,26 @@ class Page():
         soup = BeautifulSoup(self.html, "lxml")
         return soup.select_one("div.mw-content-ltr") or soup.select_one("#mw-content-text")
     
-    def summary(self):
+    def summary(self) -> None:
 
         # Try to find main content
         content = self.get_content()
 
         if not content:
             print("")
-            return ""
+            return 
 
         # Find the first non-empty paragraph
         for p in content.find_all("p", recursive=True):
             text = p.get_text(" ", strip=True)  # Get paragraph text as a single string
             if text:
                 # Wrap text at 40 characters per line
-                return str("\n".join(textwrap.wrap(text, width=150)))
+                print("\n".join(textwrap.wrap(text, width=150)))
+                return
 
         # Fallback if no paragraph found
         print("")
-        return ""
+        return 
 
     def table(self, n: int, output_dir: str = config.DATA_DIR, first_row_is_header: bool = False):
         content = self.get_content()
@@ -96,7 +97,9 @@ class Page():
             data = {}
 
         for word in text.split():
-            data[word] = int(data.get(word, 0)) + 1
+            if word.isalpha():
+                data[word] = int(data.get(word, 0)) + 1
+        
             
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
     
@@ -105,6 +108,7 @@ class Page():
         links = []
         for a in content.find_all('a', href =True):
             link = unquote(a['href'])
+            link = link.replace("_", " ")
             if not link.startswith("/wiki/"):
                 continue
             if link.startswith(config.BAD_PREFIXES):
@@ -116,7 +120,7 @@ class Page():
             
             links.append(link.split('/')[-1])
         
-        links = list(set(link))
+        links = list(set(links))
         return links
         
 
