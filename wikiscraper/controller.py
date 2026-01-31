@@ -29,6 +29,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from queue import Queue
+import random
 
 
 class Controller():
@@ -166,7 +167,24 @@ class Controller():
             first_row_is_header (bool): Treat first row as header if True.
         """
         p = self._get_page(phrase=phrase)
-        p.table(n=number, output_dir=output_dir, first_row_is_header=first_row_is_header) 
+        p.table(n=number, output_dir=output_dir, first_row_is_header=first_row_is_header)
+    
+    def next_page(self, page: Page, wait: int):
+        """
+        Navigates to a randomly selected link from the current page.
+
+        Args:
+            page (Page): The current page object containing a list of links.
+            wait (int): The number of seconds to wait before fetching the next page 
+                (used to mimic human behavior or respect rate limits).
+
+        Returns:
+            output (Page): Next visited page
+        """
+        links = page.links()
+        winner = random.choice(links)
+        output = self._get_page(phrase=winner, wait=wait)
+        return output
     
     def auto_count_words(self, phrase: str, depth: int, wait: int):
         """
