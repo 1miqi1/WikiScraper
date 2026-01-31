@@ -35,7 +35,7 @@ class Scraper():
                                             the local cached HTML file.
     """
 
-    def __init__(self, phrase: str, wiki_base_url: str = config.BULBAPEDIA_MAIN_PAGE, use_local_html_file_instead=False):
+    def __init__(self, phrase: str=None, wiki_base_url: str = config.BULBAPEDIA_MAIN_PAGE, use_local_html_file_instead=False, ):
         """
         Initialize a Scraper instance.
 
@@ -44,6 +44,10 @@ class Scraper():
             wiki_base_url (str, optional): The base URL of the wiki. Defaults to Bulbapedia's main page.
             use_local_html_file_instead (bool, optional): If True, skip downloading the page and use cached HTML.
         """
+        if phrase == None:
+            phrase = wiki_base_url.split('/')[-1]
+            self.wiki_base_url = wiki_base_url.removesuffix("/" + phrase)
+            
         if "#" in phrase:
             page_name, anchor = phrase.split("#", 1)
         else:
@@ -85,10 +89,11 @@ class Scraper():
                         f.write(r.content)
                 else:
                     return Page(phrase=self.phrase, html=r.content)
-                
-            if r.status_code == 404:
-                print(f"Skipping non-existent page: {url}")
+               
+            else:
+                print(f"Cannot download contents from page: {r.status_code}")
                 sys.exit(1)
+            
         
         if os.path.exists(path):
             with open(path, 'r') as f:

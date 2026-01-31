@@ -124,7 +124,7 @@ class Controller():
     
     def clear_json(self) -> None:
         """Clear the word count JSON file."""
-        path = config.DATA_DIR/"word_count.json"
+        path = config.WORD_COUNTS_JSON
         with open(path, 'wb') as file:
             file.write(b"")
             
@@ -201,11 +201,9 @@ class Controller():
         visited = set()
         q = Queue()  # FIFO queue
         q.put((phrase, 0))  # enqueue initial phrase
-        print(f"{phrase}")
 
         while not q.empty():
             current_phrase, current_depth = q.get()  # dequeue FIFO
-            print(f"{current_phrase} and {current_depth}")
             
             if current_phrase in visited:
                 continue
