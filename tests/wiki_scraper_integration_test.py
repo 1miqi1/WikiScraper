@@ -1,25 +1,21 @@
-""" 
+"""
 Integration tests for the WikiScraper project.
 
-This module provides stub integration tests for key functionality of the WikiScraper,
-including extracting summaries and counting words. These tests check the interaction
-between the Parser, Controller, and Page classes, as well as file I/O for word counts.
-
-Functions:
-    integration_test_summary(): Tests extraction of page summaries.
-    integration_test_count_words(): Tests counting words and updating the JSON file.
+This module provides stub integration tests for key functionality of the
+WikiScraper, including extracting summaries and counting words. These tests
+check the interaction between the Parser, Controller, and Page classes, as well
+as file I/O for word counts.
 """
 
-import unittest
+import json
+import tempfile
 from pathlib import Path
+
 from wikiscraper.page import Page
 from wikiscraper import config
 from wikiscraper.controller import Controller
 from wikiscraper.scraper import Scraper
 from wikiscraper.parser import Parser
-from unittest.mock import patch, mock_open, MagicMock
-import json
-import tempfile
 
 
 def integration_test_summary():
@@ -32,11 +28,11 @@ def integration_test_summary():
     Raises:
         AssertionError: If the summary does not match expected values.
     """
-    pr = Parser()
-    cl = Controller()
-    test = ["summary", "Team Rocket"]
-    
-    summary = cl.run_func(pr.parser.parse_args(test))
+    parser = Parser()
+    controller = Controller()
+    test_args = ["summary", "Team Rocket"]
+
+    summary = controller.run_func(parser.parser.parse_args(test_args))
     assert summary.startswith("Team Rocket")
     assert summary.endswith("Sevii Islands .")
     print("INTEGRATION_TEST_COUNT_SUMMARY: Passed")
@@ -56,9 +52,9 @@ def integration_test_count_words():
     Raises:
         AssertionError: If the word count does not increase as expected.
     """
-    pr = Parser()
-    cl = Controller()
-    test_phrases = ["count_words", "Team Rocket"]
+    parser = Parser()
+    controller = Controller()
+    test_args = ["count_words", "Team Rocket"]
 
     # Use a temporary file instead of the real WORD_COUNTS_JSON
     with tempfile.NamedTemporaryFile("w+", delete=False) as tmp_file:
@@ -72,7 +68,7 @@ def integration_test_count_words():
             words = json.load(file)
         current_word_fossils = words.get("Fossils", 0)
 
-        cl.run_func(pr.parser.parse_args(test_phrases))
+        controller.run_func(parser.parser.parse_args(test_args))
 
         with open(config.WORD_COUNTS_JSON, "r", encoding="utf-8") as file:
             words = json.load(file)

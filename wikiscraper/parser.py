@@ -1,4 +1,5 @@
-"""Module: parser.py
+"""
+Module: parser.py
 
 This module provides a command-line interface (CLI) parser for the Wiki scraper.
 It defines the `Parser` class, which sets up all supported commands and options
@@ -21,7 +22,7 @@ Usage Example:
 import argparse
 
 
-class Parser():
+class Parser:
     """
     Command-line argument parser for the Wiki scraper CLI.
 
@@ -30,7 +31,7 @@ class Parser():
     """
 
     def __init__(self):
-        """Initialize the CLI parser and define all subcommands and their arguments."""
+        """Initialize the CLI parser and define all subcommands and arguments."""
         self.parser = argparse.ArgumentParser(description="Wiki scraper CLI")
         subparsers = self.parser.add_subparsers(dest="command")
 
@@ -39,32 +40,38 @@ class Parser():
         summary.add_argument("phrase", help="Phrase to look for")
 
         # ---------------- count_words ----------------
-        count_words = subparsers.add_parser("count_words", help="Counting words in an article")
+        count_words = subparsers.add_parser(
+            "count_words", help="Counting words in an article"
+        )
         count_words.add_argument("phrase", help="Phrase to look for")
 
         # ---------------- table ----------------
-        table = subparsers.add_parser("table", help="Finding n-th table in an article")
+        table = subparsers.add_parser(
+            "table", help="Finding n-th table in an article"
+        )
         table.add_argument("phrase", help="Phrase to look for")
-        table.add_argument("--number", "-n", help="Number of a table", type=int, required=True)
+        table.add_argument(
+            "--number", "-n", help="Number of a table", type=int, required=True
+        )
         table.add_argument(
             "--first-row-is-header",
             help="If true, first row of the table is a header",
-            action="store_true"
+            action="store_true",
         )
 
-        # ---------------- analyze_relative_word_freq ----------------
+        # ---------------- analyze_relative_word_frequency ----------------
         analyze = subparsers.add_parser(
             "analyze_relative_word_frequency",
-            help="Analyzing relative word frequency"
+            help="Analyzing relative word frequency",
         )
         analyze.add_argument(
             "--mode",
             choices=["article", "language"],
             help="Sort according to occurrences in article/language",
-            required=True
+            required=True,
         )
 
-        # positive integer validator
+        # Positive integer validator
         def positive_int(value):
             value = int(value)
             if value <= 0:
@@ -75,19 +82,24 @@ class Parser():
             "--count",
             help="How many words will be displayed",
             type=positive_int,
-            required=True
+            required=True,
         )
-        analyze.add_argument("--chart", help="Optional path to save chart")
+        analyze.add_argument(
+            "--chart", help="Optional path to save chart"
+        )
 
         # ---------------- auto_count_words ----------------
         auto_count_words = subparsers.add_parser(
-            "auto_count_words",
-            help="Auto count words search"
+            "auto_count_words", help="Auto count words search"
         )
         auto_count_words.add_argument("phrase", help="Phrase to look for")
-        auto_count_words.add_argument("--depth", help="Depth of search", type=int, required=True)
-        auto_count_words.add_argument("--wait", help="Delay between searches in seconds", type=float, required=True)
-    
+        auto_count_words.add_argument(
+            "--depth", help="Depth of search", type=int, required=True
+        )
+        auto_count_words.add_argument(
+            "--wait", help="Delay between searches in seconds", type=float, required=True
+        )
+
     def parse_args(self):
         """
         Parse the command-line arguments.

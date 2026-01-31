@@ -2,16 +2,12 @@
 Central configuration for the WikiScraper project.
 
 This module defines all paths, URLs, and constants used across the project,
-so that other parts of the codebase do not hardcode file locations, wiki URLs,
-or HTTP-related settings. Keeping these centralized makes the project easier
-to maintain and update.
+so other parts of the codebase do not hardcode file locations, wiki URLs,
+or HTTP-related settings.
 """
 
 from __future__ import annotations
-
-from dataclasses import dataclass
 from pathlib import Path
-
 
 # --- Wiki settings (Bulbapedia) ---
 BULBAPEDIA_MAIN_PAGE = "https://bulbapedia.bulbagarden.net/wiki/Main_Page"
@@ -24,8 +20,7 @@ WIKI_ARTICLE_HREF_PREFIX = "/wiki/"
 """str: Prefix used to identify internal Bulbapedia article links."""
 
 
-# --- Project paths (repository root inferred from this file location) ---
-# wikiscraper/config.py -> wikiscraper/ -> repo root
+# --- Project paths ---
 REPO_ROOT = Path(__file__).resolve().parents[1]
 """Path: Root directory of the repository, inferred from this config file."""
 
@@ -44,7 +39,7 @@ TESTS_DIR = REPO_ROOT / "tests"
 TESTS_DATA_DIR = TESTS_DIR / "test_data"
 """Path: Directory containing test-specific data files."""
 
-MAX_CACHE_SIZE = 100
+MAX_CACHE_SIZE = 10
 """int: Maximum number of items to keep in cache."""
 
 
@@ -59,23 +54,27 @@ BAD_PREFIXES = (
     "/wiki/File:",
     "/wiki/Template:",
     "/wiki/Bulbapedia:Projects",
-    "/wiki/Bulbapedia:"
+    "/wiki/Bulbapedia:",
 )
 """tuple[str]: URL prefixes of links to ignore when scraping articles."""
 
 BAD_EXTENSIONS = (
-    ".png", ".jpg", ".jpeg", ".svg", ".gif", ".webp"
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".svg",
+    ".gif",
+    ".webp",
 )
 """tuple[str]: File extensions to ignore when processing links."""
 
 BAD_LINKS = (
-    '/wiki/Main_Page'
-    '/wiki/Main_Page'
-    "/wiki/Bulbapedia:Editor's_Hub"
-    '/wiki/Bulbapedia:FAQ'
-    '/wiki/Bulbapedia:Copyrights'
-    '/wiki/Bulbapedia:Privacy_policy'
-    '/wiki/Bulbapedia:About'
-    '/wiki/Bulbapedia:General_disclaimer'
+    "/wiki/Main_Page",
+    "/wiki/Bulbapedia:Editor's_Hub",
+    "/wiki/Bulbapedia:FAQ",
+    "/wiki/Bulbapedia:Copyrights",
+    "/wiki/Bulbapedia:Privacy_policy",
+    "/wiki/Bulbapedia:About",
+    "/wiki/Bulbapedia:General_disclaimer",
 )
 """tuple[str]: Specific article links to skip during scraping."""

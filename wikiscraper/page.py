@@ -1,4 +1,5 @@
-"""Module: models.py
+"""
+Module: models.py
 
 Provides the Page class for processing HTML content of wiki pages.
 Includes methods for extracting summaries, tables, word counts, and links.
@@ -14,16 +15,16 @@ Usage Example:
     links = page.links()  # Get all wiki links
 """
 
-import pandas as pd
-from . import config
-from bs4 import BeautifulSoup
-import textwrap
 import io
 import json
-from typing import Any
+import textwrap
 from pathlib import Path
-from urllib.parse import unquote
-import sys
+from typing import Any
+
+import pandas as pd
+from bs4 import BeautifulSoup
+
+from . import config
 
 
 class Page:
@@ -53,7 +54,7 @@ class Page:
         self.phrase = phrase
         self.html = html
 
-    def get_content(self) :
+    def get_content(self) -> BeautifulSoup:
         """
         Extract the main content div from the HTML.
 
@@ -63,17 +64,15 @@ class Page:
             BeautifulSoup tag or None: The main content of the page.
         """
         soup = BeautifulSoup(self.html, "lxml")
-        return soup.select_one("div.mw-content-ltr") or soup.select_one("#mw-content-text")
+        return soup.select_one("div.mw-content-ltr") or \
+            soup.select_one("#mw-content-text")
 
     def summary(self) -> str:
         """
         Print the first non-empty paragraph of the page, wrapped at 150 characters.
 
-        Iterates through all <p> tags in the content and prints the first paragraph
-        containing text. If no content is found, prints an empty string.
-
         Returns:
-            None
+            str: The first paragraph text or empty string if none found.
         """
         content = self.get_content()
         if not content:
@@ -83,21 +82,18 @@ class Page:
         for p in content.find_all("p", recursive=True):
             text = p.get_text(" ", strip=True)
             if text:
-                summary = "\n".join(textwrap.wrap(text, width=150))
+                summary = "\n".join(
+                    textwrap.wrap(text, width=150)
+                )
                 print(summary)
                 return summary
 
         print("")
         return ""
-    
+
     def is_real_table(self, table_tag) -> bool:
         """
         Determine if a BeautifulSoup <table> tag is likely a meaningful data table.
-
-        Criteria:
-            - Must have at least one <tr>
-            - Must have at least one <td> or <th>
-            - Ignore tables with common metadata or navigation classes (optional)
 
         Args:
             table_tag (bs4.element.Tag): The <table> tag to check.
@@ -105,9 +101,9 @@ class Page:
         Returns:
             bool: True if the table is likely meaningful, False otherwise.
         """
-        # Ignore tables with classes that are usually non-data
         bad_classes = (
-            "navbox", "vertical-navbox", "infobox", "metadata", "toc", "sisterproject", "mbox"
+            "navbox", "vertical-navbox", "infobox", "metadata",
+            "toc", "sisterproject", "mbox"
         )
         if any(cls in table_tag.get("class", []) for cls in bad_classes):
             return False
@@ -116,17 +112,19 @@ class Page:
         if len(rows) < 2:
             return False
 
-        # Check if at least one row has 2 or more cells
         for row in rows:
             cells = row.find_all(["td", "th"])
-            if len(cells) >= 2:
-                # Check if at least one cell has visible text
-                if any(cell.get_text(strip=True) for cell in cells):
-                    return True
+            if len(cells) >= 2 and any(cell.get_text(strip=True) for cell in cells):
+                return True
 
         return False
 
-    def table(self, n: int, output_dir: str = config.DATA_DIR, first_row_is_header: bool = False):
+    def table(
+        self,
+        n: int,
+        output_dir: str = config.DATA_DIR,
+        first_row_is_header: bool = False
+    ) -> pd.DataFrame | None:
         """
         Extract the n-th table from the page, print it, save it to CSV, and
         count occurrences of each cell value.
@@ -137,7 +135,7 @@ class Page:
             first_row_is_header (bool): Treat first row as header if True.
 
         Returns:
-            pd.DataFrame: The extracted table as a DataFrame.
+            pd.DataFrame | None: The extracted table as a DataFrame.
 
         Raises:
             ValueError: If n is not within the number of tables found.
@@ -145,8 +143,6 @@ class Page:
         content = self.get_content()
         tables = content.find_all("table")
 
-        if n < 1 or n > len(tables):
-            raise ValueError(f"Znaleziono {len(tables)} tabel, a wybrano numer {n}.")
 
         cnt = 0
         target_table_html = None
@@ -154,39 +150,40 @@ class Page:
             if not self.is_real_table(table):
                 continue
             cnt += 1
-            
             if cnt == n:
                 target_table_html = str(table)
-        
+                break
+
         if target_table_html is None:
             raise ValueError(f"Found {cnt} real tables, but chosen number {n}.")
-        
-        target_table_html = str(tables[cnt - 1])
+
         header = 0 if first_row_is_header else None
         dfs = pd.read_html(io.StringIO(target_table_html), header=header)
-
         if not dfs:
             return None
         df = dfs[0]
 
         if isinstance(df.columns, pd.MultiIndex):
-            df.columns = ["_".join(str(level) for level in col if "Unnamed" not in str(level)) for col in df.columns]
+            df.columns = [
+                "_".join(
+                    str(level) for level in col if "Unnamed" not in str(level)
+                )
+                for col in df.columns
+            ]
 
-        # Save CSV
         filename = f"{self.phrase}_{n}.csv"
         filepath = Path(output_dir) / filename
         df.to_csv(filepath, index=False)
 
-        # Count occurrences
         all_values = df.to_numpy().flatten()
         all_values = [v for v in all_values if pd.notna(v)]
         counts = pd.Series(all_values).value_counts().reset_index()
-        counts.columns = ['Wartość', 'Liczba wystąpień']
+        counts.columns = ["Wartość", "Liczba wystąpień"]
         print(counts.to_string(index=False))
-
         print(df)
+
         return df
-    
+
     def get_dict(self) -> dict[str, int]:
         """Return a dictionary of word counts from the page content."""
         soup = BeautifulSoup(self.html, "lxml")
@@ -202,14 +199,10 @@ class Page:
         """
         Count words in the page and update the JSON file with cumulative counts.
 
-        Only alphabetic words are counted. Updates or creates a JSON file defined
-        in config.WORD_COUNTS_JSON with cumulative word counts across all pages.
-
         Returns:
             list[str]: List of words found in the page.
         """
         path = Path(config.WORD_COUNTS_JSON)
-
         if not path.exists():
             path.write_text("{}", encoding="utf-8")
 
@@ -223,23 +216,23 @@ class Page:
         for word, count in words_found.items():
             data[word] = data.get(word, 0) + count
 
-        path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+        path.write_text(
+            json.dumps(data, indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
         return list(words_found.keys())
 
     def links(self) -> list[str]:
         """
         Extract valid wiki links from the page.
 
-        Filters out links based on prefixes, extensions, and a predefined list
-        in config to avoid unwanted or external links.
-
         Returns:
             list[str]: List of linked phrases on the wiki page.
         """
         content = self.get_content()
         links = []
-        for a in content.find_all('a', href=True):
-            link = (a['href'])
+        for a in content.find_all("a", href=True):
+            link = a["href"]
             if not link.startswith("/wiki/"):
                 continue
             if any(link.startswith(prefix) for prefix in config.BAD_PREFIXES):
