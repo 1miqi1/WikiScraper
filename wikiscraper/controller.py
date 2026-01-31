@@ -16,6 +16,21 @@ class Controller():
     def __init__(self):
         pass
     
+    def run_func(self, args):
+        """
+        Automatically run the function associated with the subcommand.
+        
+        args: Namespace from parser.parse_args()
+        """
+        func = args.func  # The actual function set via set_defaults(func=...)
+        
+        # Convert Namespace to dict, but remove keys not meant for the function
+        arg_dict = vars(args).copy()
+        arg_dict.pop("func")
+        arg_dict.pop("command")
+        
+        return func(**arg_dict)
+        
     def is_html_in_cache(self, phrase: str):
         path = config.CACHE_DIR/phrase
         return os.path.exist(path)
@@ -131,8 +146,8 @@ class Controller():
         if chart is not None: 
             x = np.arange(count)
             width = 0.35
-            plt.tight_layout()
-            plt.tight_layout()
+
+            plt.xticks(rotation=45)
             plt.bar(x - width/2, freq_in_language, width, color='red', label=language)
             plt.bar(x + width/2, freq_in_article, width, color='blue', label='Article')
 
