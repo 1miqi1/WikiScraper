@@ -49,6 +49,9 @@ class Controller:
         """
         if not os.path.exists(config.DATA_DIR):
             os.makedirs(config.DATA_DIR)
+        
+        if not os.path.exists(config.CACHE_DIR):
+            os.makedirs(config.CACHE_DIR)
 
         if not os.path.exists(config.WORD_COUNTS_JSON):
             with open(config.WORD_COUNTS_JSON, "wb") as file:
