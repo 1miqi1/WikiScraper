@@ -35,7 +35,7 @@ class Scraper():
                                             the local cached HTML file.
     """
 
-    def __init__(self, phrase: str=None, wiki_base_url: str = config.BULBAPEDIA_MAIN_PAGE, use_local_html_file_instead=False, ):
+    def __init__(self, phrase: str=None, wiki_base_url: str = config.BULBAPEDIA_MAIN_PAGE, use_local_html_file_instead=False):
         """
         Initialize a Scraper instance.
 
@@ -44,23 +44,21 @@ class Scraper():
             wiki_base_url (str, optional): The base URL of the wiki. Defaults to Bulbapedia's main page.
             use_local_html_file_instead (bool, optional): If True, skip downloading the page and use cached HTML.
         """
-        if phrase == None:
-            phrase = wiki_base_url.split('/')[-1]
-            self.wiki_base_url = wiki_base_url.removesuffix("/" + phrase)
+
             
         if "#" in phrase:
             page_name, anchor = phrase.split("#", 1)
         else:
             page_name, anchor = phrase, None
         
-        self.wiki_base_url = wiki_base_url
-        self.page_to_fetch = page_name
+        self.url = urljoin(wiki_base_url, page_name)
         
-        name = unquote(phrase).replace(" ", "_")
-        name = name.replace("/","-")
-        self.phrase = re.sub(r'[\\/*?:"<>|#]', "_", name)
+        title = unquote(phrase).replace(" ", "_")
+        title = title.replace("/","-")
+        self.title = re.sub(r'[\\/*?:"<>|#]', "_", title)
         
         self.use_local_html_file_instead= use_local_html_file_instead
+    
     
     def scrape(self) -> Page:
         """
@@ -77,18 +75,17 @@ class Scraper():
         Raises:
             SystemExit: If the HTML file cannot be downloaded or read locally.
         """
-        path = config.CACHE_DIR/f"{self.phrase}.html"
+        path = config.CACHE_DIR/f"{self.title}.html"
         
         if not self.use_local_html_file_instead :  
-            url = urljoin(self.wiki_base_url, self.page_to_fetch)
-            r = requests.get(url)
+            r = requests.get(self.url)
             if r.status_code == 200:
                 num_files = len([f for f in os.listdir(config.CACHE_DIR)])
                 if num_files < config.MAX_CACHE_SIZE:
                     with open(path, "wb") as f:
                         f.write(r.content)
                 else:
-                    return Page(phrase=self.phrase, html=r.content)
+                    return Page(phrase=self.title, html=r.content)
                
             else:
                 print(f"Cannot download contents from page: {r.status_code}")
@@ -97,7 +94,7 @@ class Scraper():
         
         if os.path.exists(path):
             with open(path, 'r') as f:
-                return Page(phrase=self.phrase, html=f.read())
+                return Page(phrase=self.title, html=f.read())
         else:
             print("Failed to download html file contents")
             sys.exit(1)

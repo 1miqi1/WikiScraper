@@ -53,7 +53,7 @@ class Page:
         self.phrase = phrase
         self.html = html
 
-    def get_content(self):
+    def get_content(self) :
         """
         Extract the main content div from the HTML.
 
@@ -65,7 +65,7 @@ class Page:
         soup = BeautifulSoup(self.html, "lxml")
         return soup.select_one("div.mw-content-ltr") or soup.select_one("#mw-content-text")
 
-    def summary(self) -> None:
+    def summary(self) -> str:
         """
         Print the first non-empty paragraph of the page, wrapped at 150 characters.
 
@@ -161,7 +161,7 @@ class Page:
         if target_table_html is None:
             raise ValueError(f"Found {cnt} real tables, but chosen number {n}.")
         
-        target_table_html = str(tables[n - 1])
+        target_table_html = str(tables[cnt - 1])
         header = 0 if first_row_is_header else None
         dfs = pd.read_html(io.StringIO(target_table_html), header=header)
 
@@ -186,6 +186,17 @@ class Page:
 
         print(df)
         return df
+    
+    def get_dict(self) -> dict[str, int]:
+        """Return a dictionary of word counts from the page content."""
+        soup = BeautifulSoup(self.html, "lxml")
+        text = soup.get_text(separator="\n")
+        words_found: dict[str, int] = {}
+        for word in text.split():
+            word = word.lower()
+            if word.isalpha():
+                words_found[word] = words_found.get(word, 0) + 1
+        return words_found
 
     def count_words(self) -> list[str]:
         """
@@ -197,9 +208,6 @@ class Page:
         Returns:
             list[str]: List of words found in the page.
         """
-        soup = BeautifulSoup(self.html, "lxml")
-        text = soup.get_text(separator="\n")
-
         path = Path(config.WORD_COUNTS_JSON)
 
         if not path.exists():
@@ -211,14 +219,12 @@ class Page:
         except json.JSONDecodeError:
             data = {}
 
-        words_found = []
-        for word in text.split():
-            if word.isalpha():
-                data[word] = int(data.get(word, 0)) + 1
-                words_found.append(word)
+        words_found = self.get_dict()
+        for word, count in words_found.items():
+            data[word] = data.get(word, 0) + count
 
         path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-        return words_found
+        return list(words_found.keys())
 
     def links(self) -> list[str]:
         """
