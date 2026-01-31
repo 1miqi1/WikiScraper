@@ -21,28 +21,36 @@ WIKI_ARTICLE_HREF_PREFIX = "/wiki/"  # used to recognize internal article links
 # wikiscraper/config.py -> wikiscraper/ -> repo root
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-CACHE_DIR = REPO_ROOT / "cache"
-WORD_COUNTS_JSON = REPO_ROOT / "word-counts.json"
+DATA_DIR = REPO_ROOT / "data"
+CACHE_DIR = DATA_DIR / "data/cache"
+WORD_COUNTS_JSON = DATA_DIR / "word-counts.json"
 
 TESTS_DIR = REPO_ROOT / "tests"
-TESTS_DATA_DIR = TESTS_DIR / "data"
-
-# Example integration-test HTML (you can change name if needed)
-TEAM_ROCKET_HTML = TESTS_DATA_DIR / "team_rocket.html"
+TESTS_DATA_DIR = TESTS_DIR / "test_data"
 
 
 # --- HTTP settings ---
 DEFAULT_TIMEOUT_S = 15
 
+BAD_PREFIXES = (
+    "/wiki/Special:",
+    "/wiki/Help:",
+    "/wiki/Category:",
+    "/wiki/File:",
+    "/wiki/Template:",
+)
 
-@dataclass(frozen=True)
-class AppConfig:
-    """Optional structured config object (useful for passing around)."""
+BAD_EXTENSIONS = (
+    ".png", ".jpg", ".jpeg", ".svg", ".gif", ".webp"
+)
 
-    wiki_base_url: str = WIKI_BASE_URL
-    article_href_prefix: str = WIKI_ARTICLE_HREF_PREFIX
-
-    cache_dir: Path = CACHE_DIR
-    word_counts_json: Path = WORD_COUNTS_JSON
-
-    timeout_s: int = DEFAULT_TIMEOUT_S
+BAD_LINKS = (
+    '/wiki/Main_Page'
+    '/wiki/Main_Page'
+    "/wiki/Bulbapedia:Editor's_Hub"
+    '/wiki/Bulbapedia:FAQ'
+    '/wiki/Bulbapedia:Copyrights'
+    '/wiki/Bulbapedia:Privacy_policy'
+    '/wiki/Bulbapedia:About'
+    '/wiki/Bulbapedia:General_disclaimer'
+)

@@ -21,7 +21,10 @@ def clear_json() -> None:
     add_json()
 
 
-def count_words(text: str) -> dict[str, int]:
+def convert_to_text(html: str) -> str:
+    pass
+
+def count_words(text: str):
     path = _path()
 
     if not path.exists():
@@ -37,4 +40,3 @@ def count_words(text: str) -> dict[str, int]:
         data[word] = int(data.get(word, 0)) + 1
         
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-    return data

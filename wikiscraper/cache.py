@@ -4,8 +4,6 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import shutil
 
-
-
 def safe_name(phrase: str) -> str:
     name = phrase.strip().replace("/", "_").replace("\\", "_")
     name = name.replace("..", "_")
