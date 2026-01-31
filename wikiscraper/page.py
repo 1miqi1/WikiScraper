@@ -2,6 +2,16 @@
 
 Provides the Page class for processing HTML content of wiki pages.
 Includes methods for extracting summaries, tables, word counts, and links.
+
+Classes:
+    Page: Represents a wiki page and provides methods to interact with its content.
+
+Usage Example:
+    page = Page("Pikachu", html_content)
+    page.summary()  # Print the first paragraph
+    df = page.table(1, first_row_is_header=True)  # Extract first table
+    words = page.count_words()  # Count words
+    links = page.links()  # Get all wiki links
 """
 
 import pandas as pd
@@ -13,11 +23,19 @@ import json
 from typing import Any
 from pathlib import Path
 from urllib.parse import unquote
+import sys
 
 
 class Page:
     """
     Represents a wiki page.
+
+    Provides methods for:
+        - Extracting the main content
+        - Printing a summary paragraph
+        - Extracting tables as DataFrames and saving them to CSV
+        - Counting words and updating a JSON word count file
+        - Extracting valid wiki links
 
     Attributes:
         phrase (str): The search phrase corresponding to the wiki page.
@@ -39,6 +57,8 @@ class Page:
         """
         Extract the main content div from the HTML.
 
+        Tries to select 'div.mw-content-ltr', falling back to '#mw-content-text'.
+
         Returns:
             BeautifulSoup tag or None: The main content of the page.
         """
@@ -48,6 +68,9 @@ class Page:
     def summary(self) -> None:
         """
         Print the first non-empty paragraph of the page, wrapped at 150 characters.
+
+        Iterates through all <p> tags in the content and prints the first paragraph
+        containing text. If no content is found, prints an empty string.
 
         Returns:
             None
@@ -78,6 +101,9 @@ class Page:
 
         Returns:
             pd.DataFrame: The extracted table as a DataFrame.
+
+        Raises:
+            ValueError: If n is not within the number of tables found.
         """
         content = self.get_content()
         tables = content.find_all("table")
@@ -115,6 +141,9 @@ class Page:
         """
         Count words in the page and update the JSON file with cumulative counts.
 
+        Only alphabetic words are counted. Updates or creates a JSON file defined
+        in config.WORD_COUNTS_JSON with cumulative word counts across all pages.
+
         Returns:
             list[str]: List of words found in the page.
         """
@@ -145,13 +174,16 @@ class Page:
         """
         Extract valid wiki links from the page.
 
+        Filters out links based on prefixes, extensions, and a predefined list
+        in config to avoid unwanted or external links.
+
         Returns:
             list[str]: List of linked phrases on the wiki page.
         """
         content = self.get_content()
         links = []
         for a in content.find_all('a', href=True):
-            link = unquote(a['href']).replace("_", " ")
+            link = (a['href'])
             if not link.startswith("/wiki/"):
                 continue
             if any(link.startswith(prefix) for prefix in config.BAD_PREFIXES):
@@ -160,6 +192,6 @@ class Page:
                 continue
             if link in config.BAD_LINKS:
                 continue
-            links.append(link.split('/')[-1])
+            links.append(link.removeprefix("/wiki/"))
 
         return list(set(links))

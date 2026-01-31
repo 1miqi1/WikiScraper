@@ -38,6 +38,8 @@ BAD_PREFIXES = (
     "/wiki/Category:",
     "/wiki/File:",
     "/wiki/Template:",
+    "/wiki/Bulbapedia:Projects",
+    "/wiki/Bulbapedia:"
 )
 
 BAD_EXTENSIONS = (

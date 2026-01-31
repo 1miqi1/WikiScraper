@@ -13,6 +13,7 @@ dist/
 
 # Test / coverage
 .pytest_cache/
+.data/
 .coverage
 htmlcov/
 
@@ -41,4 +42,5 @@ generated_data/
 # Other
 private.md
 *.pdf
+/data
 
