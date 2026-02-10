@@ -58,7 +58,6 @@ wikiscraper/
 │
 ├── tests/
 │   ├── data/
-│   │   └── team_rocket.html
 │   ├── test_unit_*.py
 │   └── wiki_scraper_integration_test.py
 ```
@@ -158,8 +157,8 @@ implementing the program logic.
 * **tests/**
   Contains all automated tests for the project.
 
-* **tests/data/team_rocket.html**
-  Locally stored HTML file used for offline testing and integration tests.
+* **tests/data/**
+  Locally stored HTML files used for offline testing and integration tests.
   Allows testing without making network requests.
 
 * **tests/test_unit_*.py**
