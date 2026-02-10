@@ -40,7 +40,6 @@ wikiscraper/
 ├── wiki_scraper.py
 ├── requirements.txt
 ├── README.md
-├── word-counts.json
 ├── analysis.ipynb
 ├── setup.py
 │
@@ -51,14 +50,11 @@ wikiscraper/
 │   ├── controller.py
 │   ├── scraper.py
 │   ├── html_parser.py
-│   ├── cache.py
-│   ├── models.py
-|   ├── table_utils.py
-│   ├── text_utils.py
-│   ├── output.py
-│   └── analyze.py
+│   ├── page.py
 │
-├── cache/
+├── data/
+│   ├── cache/
+│   ├── word-counts.json
 │
 ├── tests/
 │   ├── data/
@@ -84,10 +80,6 @@ wikiscraper/
   Project documentation describing the purpose of the program, its architecture,
   implemented functionalities, testing approach, and usage instructions.
 
-* **word-counts.json**
-  Serialized JSON file storing cumulative word occurrence counts produced by the
-  `--count-words` and `--auto-count-words` commands.
-  This file may be created or updated at runtime.
 
 * **analysis.ipynb**
   Jupyter Notebook used for language analysis.
@@ -139,40 +131,25 @@ implementing the program logic.
   Implements a simple disk-based caching mechanism for downloaded HTML pages.
   Reduces the number of network requests and improves performance.
 
-* **models.py**
+* **page.py**
   Defines core data structures used throughout the project, such as:
 
-  * `Page` – representation of a single wiki article,
-  * `Node` / `State` – representation of traversal state (article name and depth).
-
-* **text_utils.py**
-  Contains pure text-processing utilities, including tokenization, word counting,
-  normalization, and summary generation.
-  Functions in this module are designed to be easily unit-testable.
-
-* **text_utils.py**
-  Contains table processing.
-  Functions in this module are designed to be easily unit-testable.
-
-* **output.py**
-  Handles formatting and displaying results.
-  Responsible for printing tables, summaries, and other structured outputs to
-  the console.
-
-* **analyze.py**
-  Implements logic for `--analyze-relative-word-frequency`.
-  Compares word frequencies from collected articles with frequency data of a
-  given language and optionally generates visualizations.
+  * `Page` – representation of a single wiki article, with functionalities.
 
 
 ---
 
-### Cache directory
+### Data directory
 
 * **cache/**
   Directory used to store cached HTML files downloaded from the wiki during
   program execution.
   This directory is typically excluded from version control via `.gitignore`.
+
+* **word-counts.json**
+  Serialized JSON file storing cumulative word occurrence counts produced by the
+  `--count-words` and `--auto-count-words` commands.
+  This file may be created or updated at runtime.
 
 ---
 
@@ -302,9 +279,4 @@ python wiki_scraper_integration_test.py
 
 The test exits with a non-zero status code if it fails.
 
-
-
-## TODO (Development Plan)
-
-See [TODO.md](TODO.md) for the development checklist.
 
